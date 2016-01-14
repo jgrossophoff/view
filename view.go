@@ -23,7 +23,7 @@ import (
 )
 
 type Views struct {
-	Reload bool
+	reload bool
 
 	path    string
 	tmplExt string
@@ -50,7 +50,7 @@ func NewViews(path, tmplExt string, reload bool) (*Views, error) {
 
 // ExecuteTemplate exposes the same API as {html,text}/template.Template.
 func (v *Views) ExecuteTemplate(w io.Writer, name string, data interface{}) error {
-	if v.Reload {
+	if v.reload {
 		err := v.ParseTemplates()
 		if err != nil {
 			return err
@@ -61,13 +61,21 @@ func (v *Views) ExecuteTemplate(w io.Writer, name string, data interface{}) erro
 
 // Execute exposes the same API as {html,text}/template.Template.
 func (v *Views) Execute(w io.Writer, data interface{}) error {
-	if v.Reload {
+	if v.reload {
 		err := v.ParseTemplates()
 		if err != nil {
 			return err
 		}
 	}
 	return v.tmpls.Execute(w, data)
+}
+
+// Reload defines if all templates will be reparsed on execution.
+// Safe for concurrent access.
+func (v *Views) Reload(f bool) {
+	v.mu.Lock()
+	defer v.mu.Unlock()
+	v.reload = f
 }
 
 // ParseTemplates parses all template files with the matching extension inside
