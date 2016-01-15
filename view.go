@@ -89,11 +89,15 @@ func (v *Views) ParseTemplates() error {
 			log.Println("Err while walking template dir: ", err)
 		}
 		if !info.IsDir() && filepath.Ext(path) == v.tmplExt {
+			log.Println(path)
 			b, err := ioutil.ReadFile(path)
 			if err != nil {
 				return err
 			}
 			t, err = t.New(v.TemplateName(path)).Parse(string(b))
+			if err != nil {
+				return err
+			}
 		}
 
 		return err
