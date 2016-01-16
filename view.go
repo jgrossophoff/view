@@ -28,16 +28,18 @@ type Views struct {
 	path    string
 	tmplExt string
 	tmpls   *template.Template
+	funcMap template.FuncMap
 	mu      *sync.Mutex
 }
 
 // NewViews will parse all files initially. Returns parse errors.
-func NewViews(path, tmplExt string, reload bool) (*Views, error) {
+func NewViews(path, tmplExt string, reload bool, tmplFuncs template.FuncMap) (*Views, error) {
 	v := &Views{
 		reload,
 		path,
 		tmplExt,
 		nil,
+		tmplFuncs,
 		new(sync.Mutex),
 	}
 
@@ -82,7 +84,7 @@ func (v *Views) Reload(f bool) {
 // the folder path.
 // Save for concurrent use.
 func (v *Views) ParseTemplates() error {
-	t := template.New("all")
+	t := template.New("all").Funcs(v.funcMap)
 
 	err := filepath.Walk(v.path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
