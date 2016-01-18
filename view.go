@@ -5,8 +5,6 @@
 // file extension. A template file inside templates/foo/bar/index.tmpl for example can be
 // executed by the name foo/bar/index.
 //
-// That way, blocks introduced in Go 1.6 can be used to achieve template extension with ease.
-//
 // It allows safe reparsing of all files on each template execution to remove
 // the need for server restarts during development.
 package view
